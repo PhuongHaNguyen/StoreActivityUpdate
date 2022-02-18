@@ -68,34 +68,45 @@ namespace StoreActivityUpdate
                     service.Stop();
                     log.logInfo("Stop services success");
                 }
-                if (System.IO.Directory.Exists(SourcePath))
+
+                log.logInfo(string.Format("Check exist file {0}", SourcePath));
+                if (File.Exists(SourcePath))
                 {
-
-                    // Now Create all of the directories
-                    foreach (string dirPath in Directory.GetDirectories(SourcePath, "*", SearchOption.AllDirectories))
+                    log.logInfo(string.Format("File {0} is existing", SourcePath));
+                    if (".zip".Equals(Path.GetExtension(SourcePath)))
                     {
-                        Directory.CreateDirectory(dirPath.Replace(SourcePath, TargetPath));
-                    }
-                    // Copy all the files & Replaces any files with the same name
-                    foreach (string newPath in Directory.GetFiles(SourcePath, "*.*", SearchOption.AllDirectories))
-                    {
-                        File.Copy(newPath, newPath.Replace(SourcePath, TargetPath), true);
-                    }
-
-                    string[] fileEntries = Directory.GetFiles(TargetPath);
-                    foreach (string fileName in fileEntries)
-                    {
-                        // check extension & unzip
-                        if (".zip".Equals(Path.GetExtension(fileName)))
-                        {
-                            UnzipFile(TargetPath, fileName);
-                        }
+                        log.logInfo(string.Format("Do unzip file {0} to {1}", SourcePath, TargetPath));
+                        UnzipFile(TargetPath, SourcePath, log);
                     }
                 }
+                //if (System.IO.Directory.Exists(SourcePath))
+                //{
+
+                //    // Now Create all of the directories
+                //    foreach (string dirPath in Directory.GetDirectories(SourcePath, "*", SearchOption.AllDirectories))
+                //    {
+                //        Directory.CreateDirectory(dirPath.Replace(SourcePath, TargetPath));
+                //    }
+                //    // Copy all the files & Replaces any files with the same name
+                //    foreach (string newPath in Directory.GetFiles(SourcePath, "*.*", SearchOption.AllDirectories))
+                //    {
+                //        File.Copy(newPath, newPath.Replace(SourcePath, TargetPath), true);
+                //    }
+
+                //    string[] fileEntries = Directory.GetFiles(TargetPath);
+                //    foreach (string fileName in fileEntries)
+                //    {
+                //        // check extension & unzip
+                //        if (".zip".Equals(Path.GetExtension(fileName)))
+                //        {
+                //            UnzipFile(TargetPath, fileName);
+                //        }
+                //    }
+                //}
                 else
                 {
-                    log.logInfo("Source path " + SourcePath + " does not exist!");
-                    log.logInfo("Process fails. Press any key to exit.");
+                    log.logError("Source path " + SourcePath + " does not exist!");
+                    log.logError("Process fails. Press any key to exit.");
                 }
                 service = new ServiceController(ServicesName);
                 if ((service.Status.Equals(ServiceControllerStatus.Stopped)))
@@ -132,11 +143,23 @@ namespace StoreActivityUpdate
             File.WriteAllText(fullPath, json);
         }
 
-        public static void UnzipFile(String pathUnzip, String pathFile)
+        public static void UnzipFile(String pathUnzip, String pathFile, Log log)
         {
             FastZip fastZip = new FastZip();
+            string path = Path.Combine(pathUnzip, DateTime.Now.ToString("yyyyMMdd"));
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
+
+            log.logInfo(string.Format("Create temp folder {0}", path));
+            Directory.CreateDirectory(path);
+
             // = null => Will always overwrite if target filenames already exist
             fastZip.ExtractZip(pathFile, pathUnzip, null);
+            foreach (string newPath in Directory.GetFiles(path, "*.*", SearchOption.AllDirectories))
+            {
+                log.logInfo(string.Format("Copy file {0} to {1}", newPath, Path.Combine(pathUnzip, Path.GetFileName(newPath))));
+                File.Copy(newPath, Path.Combine(pathUnzip, Path.GetFileName(newPath)), true);
+            }
         }
 
         public static bool checkServiceExists(string ServiceName)
