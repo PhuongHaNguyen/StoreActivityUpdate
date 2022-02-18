@@ -154,12 +154,14 @@ namespace StoreActivityUpdate
             Directory.CreateDirectory(path);
 
             // = null => Will always overwrite if target filenames already exist
-            fastZip.ExtractZip(pathFile, pathUnzip, null);
+            fastZip.ExtractZip(pathFile, path, null);
             foreach (string newPath in Directory.GetFiles(path, "*.*", SearchOption.AllDirectories))
             {
                 log.logInfo(string.Format("Copy file {0} to {1}", newPath, Path.Combine(pathUnzip, Path.GetFileName(newPath))));
                 File.Copy(newPath, Path.Combine(pathUnzip, Path.GetFileName(newPath)), true);
             }
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
         }
 
         public static bool checkServiceExists(string ServiceName)
