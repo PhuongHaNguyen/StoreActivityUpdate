@@ -35,3 +35,4 @@ D:\HaNguyen\ToolUpdateVersion_V2\StoreActivityUpdate\StoreActivityUpdate\StoreAc
 D:\HaNguyen\ToolUpdateVersion_V2\StoreActivityUpdate\StoreActivityUpdate\StoreActivityUpdate\obj\Release\StoreActivityUpdate.csproj.CopyComplete
 D:\HaNguyen\ToolUpdateVersion_V2\StoreActivityUpdate\StoreActivityUpdate\StoreActivityUpdate\obj\Release\StoreActivityUpdate.exe
 D:\HaNguyen\ToolUpdateVersion_V2\StoreActivityUpdate\StoreActivityUpdate\StoreActivityUpdate\obj\Release\StoreActivityUpdate.pdb
+E:\WinApp\StoreActivityUpdate\StoreActivityUpdate\bin\Release\Newtonsoft.Json.xml

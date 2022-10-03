@@ -66,9 +66,14 @@ namespace StoreActivityUpdate
                 if (service.Status.Equals(ServiceControllerStatus.Running))
                 {
                     service.Stop();
+                    service.WaitForStatus(ServiceControllerStatus.Stopped);
                     log.logInfo("Stop services success");
                 }
-
+                while (!service.Status.Equals(ServiceControllerStatus.Stopped))
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+                System.Threading.Thread.Sleep(60000);
                 log.logInfo(string.Format("Check exist file {0}", SourcePath));
                 if (File.Exists(SourcePath))
                 {
